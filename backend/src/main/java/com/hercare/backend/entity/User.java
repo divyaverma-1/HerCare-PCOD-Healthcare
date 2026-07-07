@@ -9,6 +9,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -54,4 +59,25 @@ public class User {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<CycleRecord> cycleRecords;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<SymptomRecord> symptomRecords;
+
+    @OneToMany(mappedBy = "user")
+    private List<Medication> medications;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<Appointment> patientAppointments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private List<Appointment> doctorAppointments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Prediction> predictions = new ArrayList<>();
 }
