@@ -7,18 +7,18 @@ import com.hercare.backend.dto.response.AppointmentResponse;
 
 public interface AppointmentService {
 
-    AppointmentResponse bookAppointment(AppointmentRequest request);
+    AppointmentResponse bookAppointment(
+            AppointmentRequest request);
 
     List<AppointmentResponse> getMyAppointments();
 
     List<AppointmentResponse> getDoctorAppointments();
 
-    AppointmentResponse approveAppointment(Long appointmentId);
+    AppointmentResponse approveAppointment(Long id);
 
-    AppointmentResponse rejectAppointment(Long appointmentId);
+    AppointmentResponse rejectAppointment(Long id);
 
-    AppointmentResponse completeAppointment(Long appointmentId);
+    AppointmentResponse cancelAppointment(Long id);
 
-    void cancelAppointment(Long appointmentId);
-
+    AppointmentResponse completeAppointment(Long id);
 }

@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.hercare.backend.enums.Role;
 
 @Getter
 @Setter
@@ -45,4 +46,7 @@ public class RegisterRequest {
 
     @NotNull(message = "Gender is required")
     private Gender gender;
+
+    @NotNull(message = "Role is required")
+    private Role role;
 }

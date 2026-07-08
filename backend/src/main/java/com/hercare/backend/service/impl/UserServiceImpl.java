@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(request.getPhoneNumber())
                 .dateOfBirth(request.getDateOfBirth())
                 .gender(request.getGender())
-                .role(Role.PATIENT)
+                .role(request.getRole())
                 .active(true)
                 .build();
 

@@ -14,20 +14,17 @@ public class AppointmentResponse {
 
     private Long id;
 
+    private Long patientId;
+    private String patientName;
+
+    private Long doctorId;
+    private String doctorName;
+
     private LocalDate appointmentDate;
 
     private LocalTime appointmentTime;
 
-    private String reason;
-
     private AppointmentStatus status;
 
-    private Long patientId;
-
-    private String patientName;
-
-    private Long doctorId;
-
-    private String doctorName;
-
+    private String reason;
 }

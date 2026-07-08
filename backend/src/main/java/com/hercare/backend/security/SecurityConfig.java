@@ -37,16 +37,15 @@ public class SecurityConfig {
                 .sessionManagement(session
                         -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                // Public APIs
+                // Public
                 .requestMatchers(
                         "/",
                         "/api/auth/register",
                         "/api/auth/login"
                 ).permitAll()
-                // Logged in profile
+                // Logged-in profile
                 .requestMatchers("/api/profile")
                 .authenticated()
-                // Patient APIs
                 // Patient APIs
                 .requestMatchers(
                         "/api/patient/**",
@@ -55,16 +54,29 @@ public class SecurityConfig {
                         "/api/medications/**"
                 ).hasRole("PATIENT")
                 // Doctor APIs
-                .requestMatchers("/api/doctor/**")
-                .hasRole("DOCTOR")
-                // Admin APIs
+                .requestMatchers(
+                        "/api/doctors/profile",
+                        "/api/doctors/profile/**",
+                        "/api/doctors/availability",
+                        "/api/doctors/availability/**"
+                ).authenticated()
+                // Public doctor browsing
+                .requestMatchers(
+                        "/api/doctors",
+                        "/api/doctors/search/**",
+                        "/api/doctors/specialization/**",
+                        "/api/doctors/*"
+                ).authenticated()
+                // Admin
                 .requestMatchers("/api/admin/**")
                 .hasRole("ADMIN")
-                // Everything else
+                // Other authenticated APIs
                 .requestMatchers("/api/appointments/**")
                 .authenticated()
-                .requestMatchers("/api/predictions/**").authenticated()
-                .requestMatchers("/api/health-tips/**").authenticated()
+                .requestMatchers("/api/predictions/**")
+                .authenticated()
+                .requestMatchers("/api/health-tips/**")
+                .authenticated()
                 .anyRequest()
                 .authenticated()
                 )
@@ -79,10 +91,10 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
 
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider provider
+                = new DaoAuthenticationProvider();
 
         provider.setUserDetailsService(userDetailsService);
-
         provider.setPasswordEncoder(passwordEncoder());
 
         return provider;
@@ -90,7 +102,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration) throws Exception {
+            AuthenticationConfiguration configuration)
+            throws Exception {
 
         return configuration.getAuthenticationManager();
     }
