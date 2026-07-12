@@ -16,9 +16,13 @@ import com.hercare.backend.dto.response.LoginResponse;
 import com.hercare.backend.dto.response.UserProfileResponse;
 import com.hercare.backend.dto.response.UserResponse;
 import com.hercare.backend.entity.User;
+import com.hercare.backend.enums.ApprovalStatus;
 import com.hercare.backend.enums.Role;
+import com.hercare.backend.exception.DoctorPendingApprovalException;
+import com.hercare.backend.exception.DoctorRejectedException;
 import com.hercare.backend.exception.EmailAlreadyExistsException;
 import com.hercare.backend.exception.PhoneAlreadyExistsException;
+import com.hercare.backend.exception.ResourceNotFoundException;
 import com.hercare.backend.jwt.JwtService;
 import com.hercare.backend.repository.UserRepository;
 
@@ -64,6 +68,14 @@ public class UserServiceImpl implements UserService {
                 .active(true)
                 .build();
 
+        if (user.getRole() == Role.DOCTOR) {
+            user.setApprovalStatus(ApprovalStatus.PENDING);
+        } else {
+            user.setApprovalStatus(ApprovalStatus.APPROVED);
+        }
+
+        userRepository.save(user);
+
         userRepository.save(user);
     }
 
@@ -81,7 +93,24 @@ public class UserServiceImpl implements UserService {
                         request.getPassword()));
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (user.getRole() == Role.DOCTOR) {
+
+            if (user.getApprovalStatus() == ApprovalStatus.PENDING) {
+                throw new DoctorPendingApprovalException(
+                        "Doctor account is pending admin approval.");
+            }
+
+            if (user.getApprovalStatus() == ApprovalStatus.REJECTED) {
+                throw new DoctorRejectedException(
+                        "Doctor account has been rejected by admin.");
+            }
+        }
+        System.out.println("========== LOGIN ==========");
+        System.out.println("Email : " + user.getEmail());
+        System.out.println("Role : " + user.getRole());
+        System.out.println("Approval : " + user.getApprovalStatus());
+        System.out.println("===========================");
 
         String token = jwtService.generateToken(user);
 
@@ -123,7 +152,7 @@ public class UserServiceImpl implements UserService {
                 .getName();
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setFullName(request.getFullName());
         user.setPhoneNumber(request.getPhoneNumber());
@@ -165,7 +194,7 @@ public class UserServiceImpl implements UserService {
     public void deactivateUser(Long userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.setActive(false);
 

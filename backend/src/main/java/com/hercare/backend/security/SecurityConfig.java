@@ -37,11 +37,15 @@ public class SecurityConfig {
                 .sessionManagement(session
                         -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                // Public
+                // Public APIs
                 .requestMatchers(
                         "/",
                         "/api/auth/register",
-                        "/api/auth/login"
+                        "/api/auth/login",
+                        // Swagger
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html"
                 ).permitAll()
                 // Logged-in profile
                 .requestMatchers("/api/profile")
@@ -71,14 +75,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**")
                 .hasRole("ADMIN")
                 // Other authenticated APIs
-                .requestMatchers("/api/appointments/**")
-                .authenticated()
-                .requestMatchers("/api/predictions/**")
-                .authenticated()
-                .requestMatchers("/api/health-tips/**")
-                .authenticated()
-                .anyRequest()
-                .authenticated()
+                .requestMatchers("/api/appointments/**").authenticated()
+                .requestMatchers("/api/predictions/**").authenticated()
+                .requestMatchers("/api/health-tips/**").authenticated()
+                .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hercare.backend.dto.response.DoctorProfileResponse;
 import com.hercare.backend.dto.response.UserResponse;
+import com.hercare.backend.service.AdminService;
 import com.hercare.backend.service.DoctorProfileService;
 import com.hercare.backend.service.UserService;
 
@@ -22,13 +23,16 @@ public class AdminController {
     private final UserService userService;
 
     private final DoctorProfileService doctorProfileService;
+    private final AdminService adminService;
 
     public AdminController(
             UserService userService,
-            DoctorProfileService doctorProfileService) {
+            DoctorProfileService doctorProfileService,
+            AdminService adminService) {
 
         this.userService = userService;
         this.doctorProfileService = doctorProfileService;
+        this.adminService = adminService;
     }
 
     @GetMapping("/dashboard")
@@ -81,4 +85,30 @@ public class AdminController {
         );
     }
 
+    @GetMapping("/pending-doctors")
+    public ResponseEntity<List<UserResponse>> getPendingDoctors() {
+
+        return ResponseEntity.ok(
+                adminService.getPendingDoctors());
+    }
+
+    @PutMapping("/doctors/{doctorId}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> approveDoctor(
+            @PathVariable Long doctorId) {
+
+        adminService.approveDoctor(doctorId);
+
+        return ResponseEntity.ok("Doctor approved successfully.");
+    }
+
+    @PutMapping("/doctors/{doctorId}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> rejectDoctor(
+            @PathVariable Long doctorId) {
+
+        adminService.rejectDoctor(doctorId);
+
+        return ResponseEntity.ok("Doctor rejected successfully.");
+    }
 }
