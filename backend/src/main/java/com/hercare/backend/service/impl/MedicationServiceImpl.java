@@ -31,6 +31,14 @@ public class MedicationServiceImpl implements MedicationService {
     @Override
     public MedicationResponse addMedication(MedicationRequest request) {
 
+        // Business Validation
+        if (request.getStartDate() != null
+                && request.getEndDate() != null
+                && request.getEndDate().isBefore(request.getStartDate())) {
+
+            throw new IllegalArgumentException("End date cannot be before start date.");
+        }
+
         String email = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
@@ -49,7 +57,7 @@ public class MedicationServiceImpl implements MedicationService {
                 .user(user)
                 .build();
 
-        medicationRepository.save(medication);
+        medication = medicationRepository.save(medication);
 
         return new MedicationResponse(
                 medication.getId(),
@@ -82,7 +90,8 @@ public class MedicationServiceImpl implements MedicationService {
                 medication.getStartDate(),
                 medication.getEndDate(),
                 medication.getReminderTime(),
-                medication.getFrequency()))
+                medication.getFrequency()
+        ))
                 .collect(Collectors.toList());
     }
 }

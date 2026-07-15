@@ -20,16 +20,28 @@ import com.hercare.backend.dto.response.DoctorProfileResponse;
 import com.hercare.backend.enums.DoctorSpecialization;
 import com.hercare.backend.service.DoctorProfileService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/doctors")
 @RequiredArgsConstructor
+@Tag(
+        name = "Doctor Profile",
+        description = "Doctor Profile, Search and Availability Management APIs"
+)
 public class DoctorProfileController {
 
     private final DoctorProfileService doctorProfileService;
 
     // ================= PATIENT =================
+    @Operation(
+            summary = "Get All Doctors",
+            description = "Returns all approved doctors available in the system."
+    )
+    @ApiResponse(responseCode = "200", description = "Doctors retrieved successfully")
     @GetMapping
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<List<DoctorProfileResponse>> getAllDoctors() {
@@ -38,6 +50,12 @@ public class DoctorProfileController {
                 doctorProfileService.getAllDoctors());
     }
 
+    @Operation(
+            summary = "Get Doctor By ID",
+            description = "Returns doctor profile details using doctor ID."
+    )
+    @ApiResponse(responseCode = "200", description = "Doctor profile retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Doctor not found")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<DoctorProfileResponse> getDoctor(
@@ -47,6 +65,11 @@ public class DoctorProfileController {
                 doctorProfileService.getDoctorById(id));
     }
 
+    @Operation(
+            summary = "Search Doctor",
+            description = "Search doctors using their full name."
+    )
+    @ApiResponse(responseCode = "200", description = "Search completed successfully")
     @GetMapping("/search")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<List<DoctorProfileResponse>> searchDoctor(
@@ -56,6 +79,11 @@ public class DoctorProfileController {
                 doctorProfileService.searchDoctors(name));
     }
 
+    @Operation(
+            summary = "Search Doctors by Specialization",
+            description = "Returns doctors based on selected specialization."
+    )
+    @ApiResponse(responseCode = "200", description = "Doctors retrieved successfully")
     @GetMapping("/specialization/{specialization}")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<List<DoctorProfileResponse>>
@@ -65,10 +93,14 @@ public class DoctorProfileController {
         return ResponseEntity.ok(
                 doctorProfileService
                         .getBySpecialization(specialization));
-
     }
 
     // ================= DOCTOR PROFILE =================
+    @Operation(
+            summary = "Create Doctor Profile",
+            description = "Creates a doctor profile after doctor registration."
+    )
+    @ApiResponse(responseCode = "200", description = "Doctor profile created successfully")
     @PostMapping("/profile")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<DoctorProfileResponse> createProfile(
@@ -76,9 +108,13 @@ public class DoctorProfileController {
 
         return ResponseEntity.ok(
                 doctorProfileService.createProfile(request));
-
     }
 
+    @Operation(
+            summary = "Update Doctor Profile",
+            description = "Updates the logged-in doctor's profile."
+    )
+    @ApiResponse(responseCode = "200", description = "Doctor profile updated successfully")
     @PutMapping("/profile")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<DoctorProfileResponse> updateProfile(
@@ -86,19 +122,27 @@ public class DoctorProfileController {
 
         return ResponseEntity.ok(
                 doctorProfileService.updateProfile(request));
-
     }
 
+    @Operation(
+            summary = "Get My Doctor Profile",
+            description = "Returns the logged-in doctor's profile."
+    )
+    @ApiResponse(responseCode = "200", description = "Doctor profile retrieved successfully")
     @GetMapping("/profile")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<DoctorProfileResponse> getMyProfile() {
 
         return ResponseEntity.ok(
                 doctorProfileService.getMyProfile());
-
     }
 
     // ================= AVAILABILITY =================
+    @Operation(
+            summary = "Add Doctor Availability",
+            description = "Adds available consultation slots for the logged-in doctor."
+    )
+    @ApiResponse(responseCode = "200", description = "Availability added successfully")
     @PostMapping("/availability")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<DoctorAvailabilityResponse>
@@ -108,9 +152,13 @@ public class DoctorProfileController {
         return ResponseEntity.ok(
                 doctorProfileService
                         .addAvailability(request));
-
     }
 
+    @Operation(
+            summary = "Update Doctor Availability",
+            description = "Updates an existing availability slot."
+    )
+    @ApiResponse(responseCode = "200", description = "Availability updated successfully")
     @PutMapping("/availability/{id}")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<DoctorAvailabilityResponse>
@@ -121,9 +169,13 @@ public class DoctorProfileController {
         return ResponseEntity.ok(
                 doctorProfileService
                         .updateAvailability(id, request));
-
     }
 
+    @Operation(
+            summary = "Get My Availability",
+            description = "Returns all availability slots of the logged-in doctor."
+    )
+    @ApiResponse(responseCode = "200", description = "Availability retrieved successfully")
     @GetMapping("/availability")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<List<DoctorAvailabilityResponse>>
@@ -132,7 +184,6 @@ public class DoctorProfileController {
         return ResponseEntity.ok(
                 doctorProfileService
                         .getMyAvailability());
-
     }
 
 }
