@@ -1,5 +1,7 @@
 package com.hercare.backend.security;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.hercare.backend.service.CustomUserDetailsService;
 
@@ -33,11 +38,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session
                         -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                // Public APIs
+                // ================= PUBLIC =================
                 .requestMatchers(
                         "/",
                         "/api/auth/register",
@@ -47,39 +53,44 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/swagger-ui.html"
                 ).permitAll()
-                // Logged-in profile
+                // ================= PROFILE =================
                 .requestMatchers("/api/profile")
                 .authenticated()
-                // Patient APIs
+                // ================= PATIENT =================
                 .requestMatchers(
                         "/api/patient/**",
                         "/api/cycle/**",
                         "/api/symptoms/**",
                         "/api/medications/**"
                 ).hasRole("PATIENT")
-                // Doctor APIs
+                // ================= DOCTOR =================
                 .requestMatchers(
                         "/api/doctors/profile",
                         "/api/doctors/profile/**",
                         "/api/doctors/availability",
                         "/api/doctors/availability/**"
-                ).authenticated()
-                // Public doctor browsing
+                ).hasRole("DOCTOR")
+                // ================= DOCTOR SEARCH =================
                 .requestMatchers(
                         "/api/doctors",
                         "/api/doctors/search/**",
                         "/api/doctors/specialization/**",
                         "/api/doctors/*"
                 ).authenticated()
-                // Admin
+                // ================= APPOINTMENTS =================
+                .requestMatchers("/api/appointments/**")
+                .authenticated()
+                // ================= PREDICTIONS =================
+                .requestMatchers("/api/predictions/**")
+                .authenticated()
+                // ================= HEALTH TIPS =================
+                .requestMatchers("/api/health-tips/**")
+                .authenticated()
+                // ================= ADMIN =================
                 .requestMatchers("/api/admin/**")
                 .hasRole("ADMIN")
-                // Other authenticated APIs
-                .requestMatchers("/api/appointments/**").authenticated()
-                .requestMatchers("/api/predictions/**").authenticated()
-                .requestMatchers("/api/health-tips/**").authenticated()
-                .anyRequest().authenticated()
-                )
+                .anyRequest()
+                .authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(
                         jwtAuthenticationFilter,
@@ -91,8 +102,7 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
 
-        DaoAuthenticationProvider provider
-                = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
@@ -110,6 +120,35 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173"));
+
+        configuration.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "OPTIONS"));
+
+        configuration.setAllowedHeaders(List.of("*"));
+
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source
+                = new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }
