@@ -57,6 +57,39 @@ public class UserServiceImpl implements UserService {
             throw new PhoneAlreadyExistsException("Phone Number already registered");
         }
 
+        // Doctor-specific validations
+        if (request.getRole() == Role.DOCTOR) {
+
+            if (request.getMedicalRegistrationNumber() == null
+                    || request.getMedicalRegistrationNumber().isBlank()) {
+                throw new IllegalArgumentException(
+                        "Medical Registration Number is required.");
+            }
+
+            if (request.getMedicalCouncil() == null
+                    || request.getMedicalCouncil().isBlank()) {
+                throw new IllegalArgumentException(
+                        "Medical Council is required.");
+            }
+
+            if (request.getSpecialization() == null) {
+                throw new IllegalArgumentException(
+                        "Specialization is required.");
+            }
+
+            if (request.getHospitalName() == null
+                    || request.getHospitalName().isBlank()) {
+                throw new IllegalArgumentException(
+                        "Hospital Name is required.");
+            }
+
+            if (userRepository.existsByMedicalRegistrationNumber(
+                    request.getMedicalRegistrationNumber())) {
+                throw new IllegalArgumentException(
+                        "Medical Registration Number already exists.");
+            }
+        }
+
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
@@ -65,6 +98,11 @@ public class UserServiceImpl implements UserService {
                 .dateOfBirth(request.getDateOfBirth())
                 .gender(request.getGender())
                 .role(request.getRole())
+                .medicalRegistrationNumber(request.getMedicalRegistrationNumber())
+                .medicalCouncil(request.getMedicalCouncil())
+                .specialization(request.getSpecialization())
+                .hospitalName(request.getHospitalName())
+                .registrationVerified(false)
                 .active(true)
                 .build();
 
@@ -72,9 +110,8 @@ public class UserServiceImpl implements UserService {
             user.setApprovalStatus(ApprovalStatus.PENDING);
         } else {
             user.setApprovalStatus(ApprovalStatus.APPROVED);
+            user.setRegistrationVerified(true);
         }
-
-        userRepository.save(user);
 
         userRepository.save(user);
     }

@@ -37,6 +37,12 @@ public class AdminServiceImpl implements AdminService {
                 .gender(user.getGender().name())
                 .role(user.getRole().name())
                 .active(user.getActive())
+                // ===== New Doctor Verification Details =====
+                .medicalRegistrationNumber(user.getMedicalRegistrationNumber())
+                .medicalCouncil(user.getMedicalCouncil())
+                .specialization(user.getSpecialization())
+                .hospitalName(user.getHospitalName())
+                .registrationVerified(user.getRegistrationVerified())
                 .build())
                 .collect(Collectors.toList());
     }
@@ -45,13 +51,15 @@ public class AdminServiceImpl implements AdminService {
     public void approveDoctor(Long doctorId) {
 
         User doctor = userRepository.findById(doctorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+                .orElseThrow(()
+                        -> new ResourceNotFoundException("Doctor not found"));
 
         if (doctor.getRole() != Role.DOCTOR) {
             throw new IllegalArgumentException("User is not a doctor");
         }
 
         doctor.setApprovalStatus(ApprovalStatus.APPROVED);
+        doctor.setRegistrationVerified(true);
 
         userRepository.save(doctor);
     }
@@ -60,13 +68,15 @@ public class AdminServiceImpl implements AdminService {
     public void rejectDoctor(Long doctorId) {
 
         User doctor = userRepository.findById(doctorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+                .orElseThrow(()
+                        -> new ResourceNotFoundException("Doctor not found"));
 
         if (doctor.getRole() != Role.DOCTOR) {
             throw new IllegalArgumentException("User is not a doctor");
         }
 
         doctor.setApprovalStatus(ApprovalStatus.REJECTED);
+        doctor.setRegistrationVerified(false);
 
         userRepository.save(doctor);
     }

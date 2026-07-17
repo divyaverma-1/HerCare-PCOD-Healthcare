@@ -121,10 +121,14 @@ export default function SymptomTracker() {
                       {humanize(s.symptomType)}
                     </Typography>
                     <Chip
-                      size="small"
-                      label={humanize(s.severity)}
-                      color={SEVERITY_COLOR[s.severity] || 'default'}
-                    />
+  size="small"
+  label={humanize(s.severity)}
+  sx={{
+    bgcolor: SEVERITY_COLOR[s.severity]?.background,
+    color: SEVERITY_COLOR[s.severity]?.color,
+    fontWeight: 600,
+  }}
+/>
                   </Stack>
                   <Typography variant="caption" color="text.secondary">
                     {formatDate(s.date)}

@@ -2,6 +2,7 @@ package com.hercare.backend.dto.request;
 
 import java.time.LocalDate;
 
+import com.hercare.backend.enums.DoctorSpecialization;
 import com.hercare.backend.enums.Gender;
 import com.hercare.backend.enums.Role;
 
@@ -81,4 +82,29 @@ public class RegisterRequest {
     )
     @NotNull(message = "Role is required")
     private Role role;
+
+    // ================= Doctor Registration Fields =================
+    @Schema(
+            description = "Medical Registration Number (Required for doctors)",
+            example = "DLMC123456"
+    )
+    private String medicalRegistrationNumber;
+
+    @Schema(
+            description = "Medical Council Name (Required for doctors)",
+            example = "Delhi Medical Council"
+    )
+    private String medicalCouncil;
+
+    @Schema(
+            description = "Doctor Specialization",
+            example = "GYNECOLOGIST"
+    )
+    private DoctorSpecialization specialization;
+
+    @Schema(
+            description = "Hospital or Clinic Name",
+            example = "Apollo Hospital"
+    )
+    private String hospitalName;
 }

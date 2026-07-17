@@ -201,9 +201,13 @@ export default function PredictionCenter() {
                   <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
                     <InsightsRoundedIcon color="primary" />
                     <Chip
-                      label={`${latestResult.riskLevel} RISK`}
-                      color={RISK_LEVEL_COLOR[latestResult.riskLevel] || 'default'}
-                    />
+  label={`${latestResult.riskLevel} RISK`}
+  sx={{
+    bgcolor: RISK_LEVEL_COLOR[latestResult.riskLevel]?.background,
+    color: RISK_LEVEL_COLOR[latestResult.riskLevel]?.color,
+    fontWeight: 600,
+  }}
+/>
                   </Stack>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     BMI: <b>{latestResult.bmi}</b> · Score: <b>{latestResult.predictionScore}</b>
@@ -256,7 +260,15 @@ export default function PredictionCenter() {
                       <TableCell>{h.bmi}</TableCell>
                       <TableCell>{h.predictionScore}</TableCell>
                       <TableCell>
-                        <Chip size="small" label={h.riskLevel} color={RISK_LEVEL_COLOR[h.riskLevel] || 'default'} />
+                        <Chip
+  size="small"
+  label={h.riskLevel}
+  sx={{
+    bgcolor: RISK_LEVEL_COLOR[h.riskLevel]?.background,
+    color: RISK_LEVEL_COLOR[h.riskLevel]?.color,
+    fontWeight: 600,
+  }}
+/>
                       </TableCell>
                       <TableCell sx={{ maxWidth: 280 }}>{h.recommendation}</TableCell>
                     </TableRow>

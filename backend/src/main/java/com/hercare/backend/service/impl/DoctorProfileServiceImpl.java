@@ -49,13 +49,24 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
         User doctor = getLoggedInUser();
 
+        if (doctorProfileRepository.findByDoctorId(doctor.getId()).isPresent()) {
+            throw new IllegalArgumentException("Doctor profile already exists.");
+        }
+
         DoctorProfile profile = DoctorProfile.builder()
                 .doctor(doctor)
                 .qualification(request.getQualification())
                 .experience(request.getExperience())
                 .consultationFee(request.getConsultationFee())
-                .specialization(request.getSpecialization())
-                .hospitalName(request.getHospitalName())
+                // Use values entered during registration if request values are null
+                .specialization(
+                        request.getSpecialization() != null
+                        ? request.getSpecialization()
+                        : doctor.getSpecialization())
+                .hospitalName(
+                        request.getHospitalName() != null
+                        ? request.getHospitalName()
+                        : doctor.getHospitalName())
                 .about(request.getAbout())
                 .active(true)
                 .build();

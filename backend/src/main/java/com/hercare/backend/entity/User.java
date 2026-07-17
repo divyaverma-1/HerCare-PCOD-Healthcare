@@ -1,20 +1,34 @@
 package com.hercare.backend.entity;
 
-import com.hercare.backend.enums.Gender;
-import com.hercare.backend.enums.Role;
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.ArrayList;
 import com.hercare.backend.enums.ApprovalStatus;
+import com.hercare.backend.enums.DoctorSpecialization;
+import com.hercare.backend.enums.Gender;
+import com.hercare.backend.enums.Role;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -53,6 +67,18 @@ public class User {
 
     private String profilePicture;
 
+    /**
+     * Doctor Verification Details (Used only when role = DOCTOR)
+     */
+    @Column(unique = true)
+    private String medicalRegistrationNumber;
+
+    private String medicalCouncil;
+
+    @Builder.Default
+    private Boolean registrationVerified = false;
+
+    @Builder.Default
     private Boolean active = true;
 
     @CreationTimestamp
@@ -72,17 +98,26 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Appointment> patientAppointments = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Appointment> doctorAppointments = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Prediction> predictions = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     @Column(nullable = false)
     private ApprovalStatus approvalStatus = ApprovalStatus.APPROVED;
+
+    @Enumerated(EnumType.STRING)
+    private DoctorSpecialization specialization;
+
+    private String hospitalName;
 }

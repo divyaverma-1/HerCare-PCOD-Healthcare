@@ -178,9 +178,13 @@ export default function PatientDashboard() {
                 <Box>
                   <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
                     <Chip
-                      label={latestPrediction.riskLevel}
-                      color={RISK_LEVEL_COLOR[latestPrediction.riskLevel] || 'default'}
-                    />
+  label={latestPrediction.riskLevel}
+  sx={{
+    bgcolor: RISK_LEVEL_COLOR[latestPrediction.riskLevel]?.background,
+    color: RISK_LEVEL_COLOR[latestPrediction.riskLevel]?.color,
+    fontWeight: 600,
+  }}
+/>
                     <Typography variant="body2" color="text.secondary">
                       Score: {latestPrediction.predictionScore}
                     </Typography>
