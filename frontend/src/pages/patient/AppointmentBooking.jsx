@@ -51,16 +51,20 @@ export default function AppointmentBooking() {
     setSubmitting(true)
     try {
       const payload = {
-        doctorId: Number(doctorId),
-        appointmentDate: values.appointmentDate
-          ? dayjs(values.appointmentDate).format('YYYY-MM-DD')
-          : null,
-        appointmentTime: values.appointmentTime
-          ? dayjs(values.appointmentTime).format('HH:mm:ss')
-          : null,
-        reason: values.reason,
-      }
-      await appointmentService.bookAppointment(payload)
+  doctorId: doctor.doctorId,   // <-- changed
+  appointmentDate: values.appointmentDate
+    ? dayjs(values.appointmentDate).format('YYYY-MM-DD')
+    : null,
+  appointmentTime: values.appointmentTime
+    ? dayjs(values.appointmentTime).format('HH:mm:ss')
+    : null,
+  reason: values.reason,
+}
+
+console.log("Doctor object:", doctor);
+console.log("Payload:", payload);
+
+await appointmentService.bookAppointment(payload)
       enqueueSnackbar('Appointment request sent!', { variant: 'success' })
       navigate('/patient/appointments')
     } catch (err) {
