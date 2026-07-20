@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             Role role,
             ApprovalStatus approvalStatus);
 
+    boolean existsByRole(Role role);
+
 }

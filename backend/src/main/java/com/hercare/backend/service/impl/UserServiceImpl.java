@@ -220,7 +220,11 @@ public class UserServiceImpl implements UserService {
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
-                .gender(user.getGender().name())
+                .gender(
+                        user.getGender() != null
+                        ? user.getGender().name()
+                        : "NOT_SPECIFIED"
+                )
                 .role(user.getRole().name())
                 .active(user.getActive())
                 .build())
