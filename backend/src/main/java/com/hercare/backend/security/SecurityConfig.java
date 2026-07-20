@@ -129,11 +129,10 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(
+        configuration.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
                 "https://her-care-pcod-healthcare.vercel.app"
         ));
-
         configuration.setAllowedMethods(List.of(
                 "GET",
                 "POST",
